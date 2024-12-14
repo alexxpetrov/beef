@@ -1,0 +1,118 @@
+networks:
+  app-network:
+    driver: bridge
+
+services:
+  nginx-local:
+    container_name: nginx-local
+    restart: always
+    image: nginx:latest
+    user: "root"
+    ports:
+      - "4000:4000"
+      - "4600:4600"
+    volumes:
+      - ../config/nginx/nginx-local.conf:/etc/nginx/nginx.conf
+    depends_on:
+      - app-websocket-local
+      - app-consumer-local
+    networks:
+      - app-network
+
+  app-websocket-local:
+    container_name: app-websocket-local
+    user: "root"
+    build:
+      context: ../app-websocket
+      dockerfile: Dockerfile-local
+    restart: always
+    volumes:
+      - ../config/app-websocket/app-websocket-local:/etc/app-websocket
+    depends_on:
+      - pg-local
+      - redis-local
+      - kafka-local
+    networks:
+      - app-network
+
+  app-consumer-local:
+    container_name: app-consumer-local
+    user: "root"
+    build:
+      context: ../app-consumer
+      dockerfile: Dockerfile-local
+    restart: always
+    volumes:
+      - ../config/app-consumer:/etc/app-consumer
+    depends_on:
+      - pg-local
+      - redis-local
+      - kafka-local
+    networks:
+      - app-network
+
+  pg-local:
+    container_name: pg-local
+    user: "root"
+    image: docker.io/bitnami/postgresql:16
+    restart: always
+    ports:
+      - "5432:5432"
+    volumes:
+      - .data/pg-local:/bitnami/postgresql/data
+      - ../config/postgres/pg-local:/bitnami/postgresql/conf
+    environment:
+      - POSTGRESQL_POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRESQL_USERNAME=${POSTGRES_USER}
+      - POSTGRESQL_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRESQL_DATABASE=postgres
+      - POSTGRESQL_DB=postgres
+    networks:
+      - app-network
+
+  scylladb:
+    container_name: scylladb-local
+    user: "root"
+    restart: always
+    ports:
+      - "9042:9042"
+    image: 'bitnami/scylladb:latest'
+    volumes:
+      - .data/scylladb-local:/bitnami/scylladb
+      - ../config/scylladb/scylladb-local:/bitnami/scylladb/conf
+    environment:
+      - SCYLLADB_PASSWORD_SEEDER=yes
+      - SCYLLADB_PASSWORD=cassandra
+      - SCYLLADB_USER=cassandra
+      - SCYLLADB_AUTHENTICATOR=AllowAllAuthenticator
+      - SCYLLADB_AUTHORIZER=AllowAllAuthorizer
+    networks:
+      - app-network
+
+  redis-local:
+    container_name: redis-local
+    user: "root"
+    image: docker.io/bitnami/redis:7.2
+    restart: always
+    ports:
+      - '6379:6379'
+    volumes:
+      - .data/redis-local:/bitnami/redis/data
+      - ../config/redis/redis-local:/opt/bitnami/redis/etc
+    environment:
+      - REDIS_PASSWORD=${REDIS_PASSWORD}
+    networks:
+      - app-network
+
+  kafka-local:
+    container_name: kafka-local
+    image: docker.io/bitnami/kafka:3.7
+    restart: always
+    user: "root"
+    ports:
+      - "9092:9092"
+    volumes:
+      - .data/kafka-local:/bitnami/kafka/data
+      - ../config/kafka/kafka-local:/bitnami/kafka/config
+    networks:
+      - app-network

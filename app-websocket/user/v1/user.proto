@@ -1,0 +1,23 @@
+syntax = "proto3";
+
+package user.v1;
+
+option go_package = "app-websocket/gen/user/v1;userv1";
+
+message GetInfoRequest {
+  string accessToken = 1;
+  string userId = 2;
+}
+
+message GetInfoResponse {
+  string loginTimestamp = 1;
+  string registerTimestamp = 2;
+  string joinedRoomId = 3;
+  string leftRoomId = 4;
+  string lastMessage = 5;
+  string lastMessageRoomId = 6;
+}
+
+service UserInfoService {
+  rpc GetUserInfo (GetInfoRequest) returns (GetInfoResponse);
+}

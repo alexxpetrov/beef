@@ -1,0 +1,291 @@
+version: '3.9'
+
+services:
+  nginx:
+    container_name: nginx
+    restart: always
+    image: nginx:latest
+    user: "root"
+    ports:
+      - "443:443"
+    volumes:
+      - ../config/nginx/nginx.conf:/etc/nginx/nginx.conf
+      - ../config/nginx/certs:/etc/letsencrypt
+    depends_on:
+      - app-websocket-0
+      - app-websocket-1
+      - app-consumer-0
+      - app-consumer-1
+
+  app-websocket-0:
+    container_name: app-websocket-0
+    build:
+      context: ../app-websocket
+      dockerfile: Dockerfile
+    restart: always
+    user: "root"
+    volumes:
+      - ../config/app-websocket/app-websocket-0:/etc/app-websocket
+      - ../config/nginx/certs:/etc/letsencrypt
+    depends_on:
+      - pg-0
+      - scylladb-node0
+      - scylladb-node1
+      - redis-0
+      - redis-1
+      - redis-2
+      - redis-3
+      - redis-4
+      - redis-5
+      - kafka-0
+      - kafka-1
+      - kafka-2
+
+  app-websocket-1:
+    container_name: app-websocket-1
+    build:
+      context: ../app-websocket
+      dockerfile: Dockerfile
+    restart: always
+    user: "root"
+    volumes:
+      - ../config/app-websocket/app-websocket-1:/etc/app-websocket
+      - ../config/nginx/certs:/etc/letsencrypt
+    depends_on:
+      - pg-0
+      - scylladb-node0
+      - scylladb-node1
+      - redis-0
+      - redis-1
+      - redis-2
+      - redis-3
+      - redis-4
+      - redis-5
+      - kafka-0
+      - kafka-1
+      - kafka-2
+
+  app-consumer-0:
+    container_name: app-consumer-0
+    build:
+      context: ../app-consumer
+      dockerfile: Dockerfile
+    restart: always
+    user: "root"
+    volumes:
+      - ../config/app-consumer:/etc/app-consumer
+    depends_on:
+      - pg-0
+      - scylladb-node0
+      - scylladb-node1
+      - redis-0
+      - redis-1
+      - redis-2
+      - redis-3
+      - redis-4
+      - redis-5
+      - kafka-0
+      - kafka-1
+      - kafka-2
+
+  app-consumer-1:
+    container_name: app-consumer-1
+    build:
+      context: ../app-consumer
+      dockerfile: Dockerfile
+    restart: always
+    user: "root"
+    volumes:
+      - ../config/app-consumer:/etc/app-consumer
+    depends_on:
+      - pg-0
+      - scylladb-node0
+      - scylladb-node1
+      - redis-0
+      - redis-1
+      - redis-2
+      - redis-3
+      - redis-4
+      - redis-5
+      - kafka-0
+      - kafka-1
+      - kafka-2
+
+  pg-0:
+    container_name: pg-0
+    user: "root"
+    image: docker.io/bitnami/postgresql:16
+    restart: always
+    ports:
+      - "5432:5432"
+    volumes:
+      - .data/pg-0:/bitnami/postgresql/data
+      - ../config/postgres/pg-0:/bitnami/postgresql/conf
+    environment:
+      - POSTGRESQL_POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRESQL_USERNAME=${POSTGRES_USER}
+      - POSTGRESQL_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRESQL_DATABASE=postgres
+
+  scylladb-node0:
+    container_name: scylladb-node1
+    user: "root"
+    restart: always
+    ports:
+      - "5432:5432"
+    volumes:
+      - .data/scylladb-node0:/bitnami/scylladb/data
+      - ../config/scylladb/scylladb-node0:/bitnami/scylladb/conf
+    image: bitnami/scylladb:latest
+    environment:
+      - SCYLLADB_CLUSTER_NAME=scylladb-cluster
+      - SCYLLADB_SEEDS=scylladb-node1,scylladb-node2
+      - SCYLLADB_PASSWORD_SEEDER=yes
+      - SCYLLADB_PASSWORD=password123
+
+  scylladb-node1:
+    container_name: scylladb-node2
+    user: "root"
+    restart: always
+    ports:
+      - "5432:5432"
+    volumes:
+      - .data/scylladb-node1:/bitnami/scylladb
+      - ../config/scylladb/scylladb-node1:/bitnami/scylladb/conf
+    image: bitnami/scylladb:latest
+    environment:
+      - SCYLLADB_CLUSTER_NAME=scylladb-cluster
+      - SCYLLADB_SEEDS=scylladb-node1,scylladb-node2
+      - SCYLLADB_PASSWORD_SEEDER=yes
+      - SCYLLADB_PASSWORD=password123
+
+  redis-0:
+    container_name: redis-0
+    image: docker.io/bitnami/redis-cluster:7.2
+    restart: always
+    user: "root"
+    ports:
+      - '6379:6379'
+    volumes:
+      - .data/redis-0:/bitnami/redis/data
+      - ../config/redis/redis-0:/opt/bitnami/redis/etc
+    environment:
+      - REDIS_PASSWORD=${REDIS_PASSWORD}
+      - 'REDIS_NODES=redis-0 redis-1 redis-2 redis-3 redis-4 redis-5'
+
+  redis-1:
+    container_name: redis-1
+    image: docker.io/bitnami/redis-cluster:7.2
+    restart: always
+    user: "root"
+    ports:
+      - '6378:6379'
+    volumes:
+      - .data/redis-1:/bitnami/redis/data
+      - ../config/redis/redis-1:/opt/bitnami/redis/etc
+    environment:
+      - REDIS_PASSWORD=${REDIS_PASSWORD}
+      - 'REDIS_NODES=redis-0 redis-1 redis-2 redis-3 redis-4 redis-5'
+
+  redis-2:
+    container_name: redis-2
+    image: docker.io/bitnami/redis-cluster:7.2
+    restart: always
+    user: "root"
+    ports:
+      - '6377:6379'
+    volumes:
+      - .data/redis-2:/bitnami/redis/data
+      - ../config/redis/redis-2:/opt/bitnami/redis/etc
+    environment:
+      - REDIS_PASSWORD=${REDIS_PASSWORD}
+      - 'REDIS_NODES=redis-0 redis-1 redis-2 redis-3 redis-4 redis-5'
+
+  redis-3:
+    container_name: redis-3
+    image: docker.io/bitnami/redis-cluster:7.2
+    restart: always
+    user: "root"
+    ports:
+      - '6376:6379'
+    volumes:
+      - .data/redis-3:/bitnami/redis/data
+      - ../config/redis/redis-3:/opt/bitnami/redis/etc
+    environment:
+      - REDIS_PASSWORD=${REDIS_PASSWORD}
+      - 'REDIS_NODES=redis-0 redis-1 redis-2 redis-3 redis-4 redis-5'
+
+  redis-4:
+    container_name: redis-4
+    image: docker.io/bitnami/redis-cluster:7.2
+    restart: always
+    user: "root"
+    ports:
+      - '6375:6379'
+    volumes:
+      - .data/redis-4:/bitnami/redis/data
+      - ../config/redis/redis-4:/opt/bitnami/redis/etc
+    environment:
+      - REDIS_PASSWORD=${REDIS_PASSWORD}
+      - 'REDIS_NODES=redis-0 redis-1 redis-2 redis-3 redis-4 redis-5'
+
+  redis-5:
+    container_name: redis-5
+    image: docker.io/bitnami/redis-cluster:7.2
+    restart: always
+    user: "root"
+    ports:
+      - '6374:6379'
+    volumes:
+      - .data/redis-5:/bitnami/redis/data
+      - ../config/redis/redis-5:/opt/bitnami/redis/etc
+    depends_on:
+      - redis-0
+      - redis-1
+      - redis-2
+      - redis-3
+      - redis-4
+    environment:
+      - 'REDIS_PASSWORD=${REDIS_PASSWORD}'
+      - 'REDISCLI_AUTH=${REDISCLI_AUTH}'
+      - 'REDIS_CLUSTER_REPLICAS=1'
+      - 'REDIS_NODES=redis-0 redis-1 redis-2 redis-3 redis-4 redis-5'
+      - 'REDIS_CLUSTER_CREATOR=yes'
+
+  kafka-0:
+    container_name: kafka-0
+    image: docker.io/bitnami/kafka:3.7
+    restart: always
+    user: "root"
+    ports:
+      - "9092"
+    environment:
+      - KAFKA_KRAFT_CLUSTER_ID=${KAFKA_KRAFT_CLUSTER_ID}
+    volumes:
+      - .data/kafka-0:/bitnami/kafka/data
+      - ../config/kafka/kafka-0:/bitnami/kafka/config
+
+  kafka-1:
+    container_name: kafka-1
+    image: docker.io/bitnami/kafka:3.7
+    user: "root"
+    ports:
+      - "9092"
+    restart: always
+    environment:
+      - KAFKA_KRAFT_CLUSTER_ID=${KAFKA_KRAFT_CLUSTER_ID}
+    volumes:
+      - .data/kafka-1:/bitnami/kafka/data
+      - ../config/kafka/kafka-1:/bitnami/kafka/config
+  kafka-2:
+    container_name: kafka-2
+    image: docker.io/bitnami/kafka:3.7
+    user: "root"
+    ports:
+      - "9092"
+    restart: always
+    environment:
+      - KAFKA_KRAFT_CLUSTER_ID=${KAFKA_KRAFT_CLUSTER_ID}
+    volumes:
+      - .data/kafka-2:/bitnami/kafka/data
+      - ../config/kafka/kafka-2:/bitnami/kafka/config

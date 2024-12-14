@@ -1,0 +1,63 @@
+syntax = "proto3";
+
+   package erdtree.v1;
+
+   option go_package = "app-websocket/gen/erdtree/v1;erdtreev1";  
+
+   message GetRequest {
+    string key = 1;
+  }
+  
+  message GetResponse {
+    bool exists = 1;
+    bytes value = 2;
+  }
+  
+  message SetRequest {
+    string key = 1;
+    bytes value = 2;
+    // uint64 ttl = 3; // Time-to-live in seconds (optional)
+  }
+  
+  message SetResponse {
+    bool success = 1;
+  }
+  
+  message DeleteRequest {
+    string key = 1;
+  }
+  
+  message DeleteResponse {
+    bool success = 1;
+  }
+  
+  enum Operation {
+    UNSPECIFIED = 0;
+    SET = 1;
+    DELETE = 2;
+    LOAD = 3;
+  }
+  
+  message LogEntry {
+    int64 timestamp = 1;
+    Operation operation = 2;
+    string key = 3;
+    bytes value = 4;
+    int64 expires_at = 5;
+  }
+
+  message ReplicationRequest {
+    repeated LogEntry entries = 1;
+  }
+  
+  message ReplicationResponse {
+    bool success = 1;
+    string error = 2;
+  }
+
+   service ErdtreeStore {
+     rpc Get(GetRequest) returns (GetResponse) {}
+     rpc Set(SetRequest) returns (SetResponse) {}
+     rpc Delete(DeleteRequest) returns (DeleteResponse) {}
+     rpc Replicate(ReplicationRequest) returns (ReplicationResponse) {}
+   }
