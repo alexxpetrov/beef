@@ -22,7 +22,7 @@ type Config struct {
 }
 
 type PostgresConfig struct {
-	PostgresURL string `env:"POSTGRES_URL" env-required:"true"`
+	PostgresURL string `env:"DATABASE_URL" env-required:"true"`
 }
 type ScyllaConfig struct {
 	ScyllaURL string `env:"SCYLLA_URL" env-required:"true"`

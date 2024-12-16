@@ -1,4 +1,4 @@
-CREATE KEYSPACE messages_space WITH replication = {'class': 'NetworkTopologyStrategy', 'replication_factor' : 1};
+CREATE KEYSPACE messages_space WITH replication = {'class': 'NetworkTopologyStrategy', 'replication_factor' : 3};
 
 use messages_space;
 

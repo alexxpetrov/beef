@@ -1,5 +1,7 @@
-version: '3.9'
-
+networks:
+  app-network:
+    driver: bridge
+    
 services:
   nginx:
     container_name: nginx
@@ -16,6 +18,8 @@ services:
       - app-websocket-1
       - app-consumer-0
       - app-consumer-1
+    networks:
+      - app-network
 
   app-websocket-0:
     container_name: app-websocket-0
@@ -40,6 +44,8 @@ services:
       - kafka-0
       - kafka-1
       - kafka-2
+    networks:
+      - app-network
 
   app-websocket-1:
     container_name: app-websocket-1
@@ -64,6 +70,8 @@ services:
       - kafka-0
       - kafka-1
       - kafka-2
+    networks:
+      - app-network
 
   app-consumer-0:
     container_name: app-consumer-0
@@ -87,6 +95,8 @@ services:
       - kafka-0
       - kafka-1
       - kafka-2
+    networks:
+      - app-network
 
   app-consumer-1:
     container_name: app-consumer-1
@@ -110,6 +120,8 @@ services:
       - kafka-0
       - kafka-1
       - kafka-2
+    networks:
+      - app-network
 
   pg-0:
     container_name: pg-0
@@ -126,38 +138,50 @@ services:
       - POSTGRESQL_USERNAME=${POSTGRES_USER}
       - POSTGRESQL_PASSWORD=${POSTGRES_PASSWORD}
       - POSTGRESQL_DATABASE=postgres
+    networks:
+      - app-network
 
   scylladb-node0:
-    container_name: scylladb-node1
+    container_name: scylladb-node0
     user: "root"
     restart: always
     ports:
-      - "5432:5432"
+      - "9042:9042"
     volumes:
       - .data/scylladb-node0:/bitnami/scylladb/data
       - ../config/scylladb/scylladb-node0:/bitnami/scylladb/conf
     image: bitnami/scylladb:latest
     environment:
       - SCYLLADB_CLUSTER_NAME=scylladb-cluster
-      - SCYLLADB_SEEDS=scylladb-node1,scylladb-node2
+      - SCYLLADB_SEEDS=scylladb-node0,scylladb-node1
       - SCYLLADB_PASSWORD_SEEDER=yes
-      - SCYLLADB_PASSWORD=password123
+      - SCYLLADB_PASSWORD=cassandra
+      - SCYLLADB_USER=cassandra
+      - SCYLLADB_AUTHENTICATOR=AllowAllAuthenticator
+      - SCYLLADB_AUTHORIZER=AllowAllAuthorizer
+    networks:
+      - app-network
 
   scylladb-node1:
-    container_name: scylladb-node2
+    container_name: scylladb-node1
     user: "root"
     restart: always
     ports:
-      - "5432:5432"
+      - "9042:9042"
     volumes:
       - .data/scylladb-node1:/bitnami/scylladb
       - ../config/scylladb/scylladb-node1:/bitnami/scylladb/conf
     image: bitnami/scylladb:latest
     environment:
       - SCYLLADB_CLUSTER_NAME=scylladb-cluster
-      - SCYLLADB_SEEDS=scylladb-node1,scylladb-node2
+      - SCYLLADB_SEEDS=scylladb-node0,scylladb-node1
       - SCYLLADB_PASSWORD_SEEDER=yes
-      - SCYLLADB_PASSWORD=password123
+      - SCYLLADB_PASSWORD=cassandra
+      - SCYLLADB_USER=cassandra
+      - SCYLLADB_AUTHENTICATOR=AllowAllAuthenticator
+      - SCYLLADB_AUTHORIZER=AllowAllAuthorizer
+    networks:
+      - app-network
 
   redis-0:
     container_name: redis-0
@@ -172,6 +196,8 @@ services:
     environment:
       - REDIS_PASSWORD=${REDIS_PASSWORD}
       - 'REDIS_NODES=redis-0 redis-1 redis-2 redis-3 redis-4 redis-5'
+    networks:
+      - app-network
 
   redis-1:
     container_name: redis-1
@@ -186,6 +212,8 @@ services:
     environment:
       - REDIS_PASSWORD=${REDIS_PASSWORD}
       - 'REDIS_NODES=redis-0 redis-1 redis-2 redis-3 redis-4 redis-5'
+    networks:
+      - app-network
 
   redis-2:
     container_name: redis-2
@@ -200,6 +228,8 @@ services:
     environment:
       - REDIS_PASSWORD=${REDIS_PASSWORD}
       - 'REDIS_NODES=redis-0 redis-1 redis-2 redis-3 redis-4 redis-5'
+    networks:
+      - app-network
 
   redis-3:
     container_name: redis-3
@@ -214,6 +244,8 @@ services:
     environment:
       - REDIS_PASSWORD=${REDIS_PASSWORD}
       - 'REDIS_NODES=redis-0 redis-1 redis-2 redis-3 redis-4 redis-5'
+    networks:
+      - app-network
 
   redis-4:
     container_name: redis-4
@@ -228,6 +260,8 @@ services:
     environment:
       - REDIS_PASSWORD=${REDIS_PASSWORD}
       - 'REDIS_NODES=redis-0 redis-1 redis-2 redis-3 redis-4 redis-5'
+    networks:
+      - app-network
 
   redis-5:
     container_name: redis-5
@@ -251,6 +285,8 @@ services:
       - 'REDIS_CLUSTER_REPLICAS=1'
       - 'REDIS_NODES=redis-0 redis-1 redis-2 redis-3 redis-4 redis-5'
       - 'REDIS_CLUSTER_CREATOR=yes'
+    networks:
+      - app-network
 
   kafka-0:
     container_name: kafka-0
@@ -264,6 +300,8 @@ services:
     volumes:
       - .data/kafka-0:/bitnami/kafka/data
       - ../config/kafka/kafka-0:/bitnami/kafka/config
+    networks:
+      - app-network
 
   kafka-1:
     container_name: kafka-1
@@ -277,6 +315,9 @@ services:
     volumes:
       - .data/kafka-1:/bitnami/kafka/data
       - ../config/kafka/kafka-1:/bitnami/kafka/config
+    networks:
+      - app-network
+
   kafka-2:
     container_name: kafka-2
     image: docker.io/bitnami/kafka:3.7
@@ -289,3 +330,5 @@ services:
     volumes:
       - .data/kafka-2:/bitnami/kafka/data
       - ../config/kafka/kafka-2:/bitnami/kafka/config
+    networks:
+      - app-network

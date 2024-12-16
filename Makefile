@@ -4,7 +4,7 @@ SCYLLA_HOST=127.0.0.1   # Change to "scylladb" if running inside Docker Compose 
 SCYLLA_PORT=9042
 
 ifeq ($(db), pg)
-	url := $(POSTGRES_URL)
+	url := $(DATABASE_URL)
 else ifeq ($(db), cassandra)
 	url := $(CASSANDRA_URL)
 endif
