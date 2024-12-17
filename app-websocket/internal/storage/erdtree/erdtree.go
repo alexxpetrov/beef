@@ -6,8 +6,14 @@ import (
 )
 
 func New() (erdtreev1connect.ErdtreeStoreClient, error) {
+	erdTreeUrl := "https://erdtree.fly.dev"
+
+	if erdTreeUrl == "" {
+		erdTreeUrl = "http://host.docker.internal:50051"
+	}
+
 	return erdtreev1connect.NewErdtreeStoreClient(
 		http.DefaultClient,
-		"http://host.docker.internal:50051", // Server URL
+		erdTreeUrl, // Server URL
 	), nil
 }

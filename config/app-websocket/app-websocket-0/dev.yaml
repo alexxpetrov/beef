@@ -1,7 +1,7 @@
 env: dev
 
 http:
-  port: "443"
+  port: "4000"
   read_timeout: 10s
   write_timeout: 10s
   shutdown_timeout: 10s
@@ -10,8 +10,8 @@ http:
     burst: 20
     ttl: 10m
   tls:
-    cert: "/etc/letsencrypt/live/rooms.servebeer.com/cert.pem"
-    key: "/etc/letsencrypt/live/rooms.servebeer.com/privkey.pem"
+    cert: "/etc/letsencrypt/live/beef.upbeatbenevolance.xyz/fullchain.pem"
+    key: "/etc/letsencrypt/live/beef.upbeatbenevolance.xyz/privkey.pem"
 
 chat:
   count_messages_get: 100
@@ -30,9 +30,9 @@ kafka:
 
 redis:
   addrs:
-    - redis-0:6379
-    - redis-1:6379
-    - redis-2:6379
-    - redis-3:6379
-    - redis-4:6379
+    # - redis-0:6379
+    # - redis-1:6379
+    # - redis-2:6379
+    # - redis-3:6379
+    # - redis-4:6379
     - redis-5:6379
