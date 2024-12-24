@@ -61,6 +61,7 @@ func InitRouter(chat *chat.Handler, logger *slog.Logger, limiter *config.Limiter
 	mux.Use(rate_limiter.Limit(limiter.RPS, limiter.Burst, limiter.TTL, logger))
 	mux.Use(middleware.Recoverer)
 	mux.Use(mwlogger.Log(logger))
+	logger.Info(fmt.Sprintf("listening to chat messages"))
 
 	mux.Route("/chat", func(r chi.Router) {
 		r.Use(jwt.Validate(logger))

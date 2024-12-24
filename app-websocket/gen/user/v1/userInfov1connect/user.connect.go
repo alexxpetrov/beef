@@ -2,7 +2,7 @@
 //
 // Source: user/v1/user.proto
 
-package userv1connect
+package userInfov1connect
 
 import (
 	v1 "app-websocket/gen/user/v1"
@@ -22,7 +22,7 @@ const _ = connect.IsAtLeastVersion1_13_0
 
 const (
 	// UserInfoServiceName is the fully-qualified name of the UserInfoService service.
-	UserInfoServiceName = "user.v1.UserInfoService"
+	UserInfoServiceName = "userInfo.v1.UserInfoService"
 )
 
 // These constants are the fully-qualified names of the RPCs defined in this package. They're
@@ -35,7 +35,7 @@ const (
 const (
 	// UserInfoServiceGetUserInfoProcedure is the fully-qualified name of the UserInfoService's
 	// GetUserInfo RPC.
-	UserInfoServiceGetUserInfoProcedure = "/user.v1.UserInfoService/GetUserInfo"
+	UserInfoServiceGetUserInfoProcedure = "/userInfo.v1.UserInfoService/GetUserInfo"
 )
 
 // These variables are the protoreflect.Descriptor objects for the RPCs defined in this package.
@@ -44,15 +44,15 @@ var (
 	userInfoServiceGetUserInfoMethodDescriptor = userInfoServiceServiceDescriptor.Methods().ByName("GetUserInfo")
 )
 
-// UserInfoServiceClient is a client for the user.v1.UserInfoService service.
+// UserInfoServiceClient is a client for the userInfo.v1.UserInfoService service.
 type UserInfoServiceClient interface {
 	GetUserInfo(context.Context, *connect.Request[v1.GetInfoRequest]) (*connect.Response[v1.GetInfoResponse], error)
 }
 
-// NewUserInfoServiceClient constructs a client for the user.v1.UserInfoService service. By default,
-// it uses the Connect protocol with the binary Protobuf Codec, asks for gzipped responses, and
-// sends uncompressed requests. To use the gRPC or gRPC-Web protocols, supply the connect.WithGRPC()
-// or connect.WithGRPCWeb() options.
+// NewUserInfoServiceClient constructs a client for the userInfo.v1.UserInfoService service. By
+// default, it uses the Connect protocol with the binary Protobuf Codec, asks for gzipped responses,
+// and sends uncompressed requests. To use the gRPC or gRPC-Web protocols, supply the
+// connect.WithGRPC() or connect.WithGRPCWeb() options.
 //
 // The URL supplied here should be the base URL for the Connect or gRPC server (for example,
 // http://api.acme.com or https://acme.com/grpc).
@@ -73,12 +73,12 @@ type userInfoServiceClient struct {
 	getUserInfo *connect.Client[v1.GetInfoRequest, v1.GetInfoResponse]
 }
 
-// GetUserInfo calls user.v1.UserInfoService.GetUserInfo.
+// GetUserInfo calls userInfo.v1.UserInfoService.GetUserInfo.
 func (c *userInfoServiceClient) GetUserInfo(ctx context.Context, req *connect.Request[v1.GetInfoRequest]) (*connect.Response[v1.GetInfoResponse], error) {
 	return c.getUserInfo.CallUnary(ctx, req)
 }
 
-// UserInfoServiceHandler is an implementation of the user.v1.UserInfoService service.
+// UserInfoServiceHandler is an implementation of the userInfo.v1.UserInfoService service.
 type UserInfoServiceHandler interface {
 	GetUserInfo(context.Context, *connect.Request[v1.GetInfoRequest]) (*connect.Response[v1.GetInfoResponse], error)
 }
@@ -95,7 +95,7 @@ func NewUserInfoServiceHandler(svc UserInfoServiceHandler, opts ...connect.Handl
 		connect.WithSchema(userInfoServiceGetUserInfoMethodDescriptor),
 		connect.WithHandlerOptions(opts...),
 	)
-	return "/user.v1.UserInfoService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	return "/userInfo.v1.UserInfoService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch r.URL.Path {
 		case UserInfoServiceGetUserInfoProcedure:
 			userInfoServiceGetUserInfoHandler.ServeHTTP(w, r)
@@ -109,5 +109,5 @@ func NewUserInfoServiceHandler(svc UserInfoServiceHandler, opts ...connect.Handl
 type UnimplementedUserInfoServiceHandler struct{}
 
 func (UnimplementedUserInfoServiceHandler) GetUserInfo(context.Context, *connect.Request[v1.GetInfoRequest]) (*connect.Response[v1.GetInfoResponse], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("user.v1.UserInfoService.GetUserInfo is not implemented"))
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("userInfo.v1.UserInfoService.GetUserInfo is not implemented"))
 }

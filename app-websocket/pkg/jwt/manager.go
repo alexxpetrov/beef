@@ -65,7 +65,7 @@ func VerifyToken(token, secretKey string) (*jwt.Token, error) {
 	if claims.ExpiresAt != nil && claims.ExpiresAt.Time.Before(time.Now()) {
 		return nil, errors.New("token expired")
 	}
-	if claims.Issuer != "go-server" {
+	if claims.Issuer != "identia-be" {
 		return nil, errors.New("invalid issuer")
 	}
 
@@ -95,7 +95,7 @@ func Validate(logger *slog.Logger) func(next http.Handler) http.Handler {
 				if err.Error() == "access token expired" {
 
 				}
-				ProcessError(w, "invalid access token: ", http.StatusUnauthorized)
+				ProcessError(w, "invalid access token: "+err.Error(), http.StatusUnauthorized)
 				return
 			}
 

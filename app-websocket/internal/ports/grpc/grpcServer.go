@@ -2,13 +2,12 @@ package grpcServer
 
 import (
 	"app-websocket/gen/erdtree/v1/erdtreev1connect"
-	"app-websocket/gen/user/v1/userv1connect"
+	"app-websocket/gen/user/v1/userInfov1connect"
 	"app-websocket/internal/user"
 	"context"
 	"fmt"
 	"log/slog"
 	"net/http"
-	"os"
 	"time"
 
 	"connectrpc.com/connect"
@@ -39,22 +38,15 @@ type GrpcServer struct {
 }
 
 func New(logger *slog.Logger, erdtreeClient erdtreev1connect.ErdtreeStoreClient) (*GrpcServer, error) {
-	publicUrl := os.Getenv("PUBLIC_URL")
 	// port := os.Getenv("PORT")
 
 	user := user.NewExternalClient(erdtreeClient)
 	mux := http.NewServeMux()
 	interceptors := connect.WithInterceptors(NewAuthInterceptor())
-	path, handler := userv1connect.NewUserInfoServiceHandler(user, interceptors)
+	path, handler := userInfov1connect.NewUserInfoServiceHandler(user, interceptors)
 
 	corsHandler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		fmt.Println(w, r)
-		if publicUrl != "" {
-			w.Header().Set("Access-Control-Allow-Origin", publicUrl)
-
-		} else {
-			w.Header().Set("Access-Control-Allow-Origin", "http://localhost:3000")
-		}
+		w.Header().Set("Access-Control-Allow-Origin", "http://localhost:3000")
 		w.Header().Set("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
 		w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization, Set-Cookie, connect-protocol-version")
 		w.Header().Set("Access-Control-Allow-Credentials", "true")
@@ -69,7 +61,7 @@ func New(logger *slog.Logger, erdtreeClient erdtreev1connect.ErdtreeStoreClient)
 	})
 
 	srv := &http.Server{
-		Addr:    ":4600",
+		Addr:    "0.0.0.0:4600",
 		Handler: h2c.NewHandler(mux, &http2.Server{}),
 	}
 	shutDownTimeout := 10 * time.Second
@@ -89,12 +81,13 @@ func (server *GrpcServer) Run(ctx context.Context) error {
 	go func() {
 		server.mux.Handle(server.path, server.corsHandler)
 
-		// TODO: Fix <nil> logger
-		// server.logger.Info(fmt.Sprintf("starting listening: %s", server.srv.Addr))
+		server.logger.Info(fmt.Sprintf("starting listening: %s", server.srv.Addr))
 
 		// if server.certFilePath != "" && server.keyFilePath != "" {
 		// 	errResult <- server.srv.ListenAndServeTLS(server.certFilePath, server.keyFilePath)
 		// }
+		fmt.Println("SERVING AT: ", "0.0.0.0:")
+
 		server.srv.ListenAndServe()
 	}()
 

@@ -1,8 +1,8 @@
 syntax = "proto3";
 
-package user.v1;
+package userInfo.v1;
 
-option go_package = "app-websocket/gen/user/v1;userv1";
+option go_package = "app-websocket/gen/user/v1;userInfov1";
 
 message GetInfoRequest {
   string accessToken = 1;

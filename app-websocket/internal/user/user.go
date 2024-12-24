@@ -3,7 +3,7 @@ package user
 import (
 	erdtreev1 "app-websocket/gen/erdtree/v1"
 	"app-websocket/gen/erdtree/v1/erdtreev1connect"
-	userv1 "app-websocket/gen/user/v1"
+	userInfov1 "app-websocket/gen/user/v1"
 	"context"
 	"fmt"
 
@@ -29,8 +29,8 @@ func NewExternalClient(erdtreeClient erdtreev1connect.ErdtreeStoreClient) *UserI
 
 func (s *UserInfoServer) GetUserInfo(
 	ctx context.Context,
-	req *connect.Request[userv1.GetInfoRequest],
-) (*connect.Response[userv1.GetInfoResponse], error) {
+	req *connect.Request[userInfov1.GetInfoRequest],
+) (*connect.Response[userInfov1.GetInfoResponse], error) {
 	var err error
 
 	loginCacheRequest := connect.NewRequest(&erdtreev1.GetRequest{
@@ -105,7 +105,7 @@ func (s *UserInfoServer) GetUserInfo(
 		fmt.Println("Error retrieving leftRoom record in Erdtree:", err)
 	}
 
-	userInfoResponse := connect.NewResponse(&userv1.GetInfoResponse{
+	userInfoResponse := connect.NewResponse(&userInfov1.GetInfoResponse{
 		LoginTimestamp:    string(loginTimestamp.Msg.Value),
 		RegisterTimestamp: string(registerTimestamp.Msg.Value),
 		JoinedRoomId:      string(joinRoomId.Msg.Value),

@@ -13,7 +13,7 @@ docker-local:
 	docker compose -f docker-compose/docker-compose-local.yaml --env-file=docker-compose/.env up --remove-orphans --build
 
 docker-dev:
-	docker compose -f docker-compose/docker-compose-dev.yaml --env-file=docker-compose/.env up --remove-orphans --build
+	docker compose -f docker-compose/docker-compose-dev.yaml --env-file=docker-compose/.env up --remove-orphans --build -d
 
 migrate-create:
 	migrate create -ext sql -dir migrations/$(db) -seq $(name)

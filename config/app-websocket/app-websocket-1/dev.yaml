@@ -10,8 +10,8 @@ http:
     burst: 20
     ttl: 10m
   tls:
-    cert: "/etc/letsencrypt/live/beef.upbeatbenevolance.xyz/fullchain.pem"
-    key: "/etc/letsencrypt/live/beef.upbeatbenevolance.xyz/privkey.pem"
+    cert: "/etc/letsencrypt/live/beef.alexspetrov.com/fullchain.pem"
+    key: "/etc/letsencrypt/live/beef.alexspetrov.com/privkey.pem"
 
 chat:
   count_messages_get: 100

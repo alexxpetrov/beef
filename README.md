@@ -79,6 +79,6 @@ Manages centralized logging and provides Redis caching.
 **GitHub**: [Erdtree](https://github.com/alexxpetrov/erdtree)
 
 ## Live Demo
-Try out the application: [Beef Demo](https://www.upbeatbenevolance.xyz/chat)
+Try out the application: [Beef Demo](https://www.alexspetrov.com/chat)
 
 ---
